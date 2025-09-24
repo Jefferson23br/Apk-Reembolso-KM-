@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import AuthNavigator from './AuthNavigator';
 import MainTabNavigator from './MainTabNavigator';
 import { getToken } from '../storage/authStorage';
-
-export const AuthContext = React.createContext();
+import { AuthContext } from '../context/AuthContext';
 
 export default function AppNavigator() {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +24,7 @@ export default function AppNavigator() {
     bootstrapAsync();
   }, []);
   
-  const authContext = React.useMemo(() => ({
+  const authContext = useMemo(() => ({
     signIn: (token) => {
       setUserToken(token);
     },
@@ -35,7 +34,11 @@ export default function AppNavigator() {
   }), []);
 
   if (isLoading) {
-    return <ActivityIndicator size="large" style={{ flex: 1 }} />;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
