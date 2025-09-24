@@ -1,0 +1,11 @@
+# Dependências
+/node_modules
+/ReembolsoApp/node_modules
+/ReembolsoApp/.vscode
+/ReembolsoApp/.expo
+
+# Arquivo de ambiente com senhas
+.env
+
+# Arquivos Modelos 
+Leia-me.txt

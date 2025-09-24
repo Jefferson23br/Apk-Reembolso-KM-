@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+<div align="center">
+<img src="https://www.google.com/url?sa=E&source=gmail&q=https://img.shields.io/badge/React_Native-20232A?style=for-the-badge%26logo=react%26logoColor=61DAFB" alt="React Native"/>
+<img src="https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white" alt="Expo"/>
+<img src="https://www.google.com/url?sa=E&source=gmail&q=https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge%26logo=javascript%26logoColor=black" alt="JavaScript"/>
+<img src="https://www.google.com/url?sa=E&source=gmail&q=https://img.shields.io/badge/GIT-E44C30?style=for-the-badge%26logo=git%26logoColor=white" alt="Git"/>
+</div>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+eembolso KM - Aplicativo Mobile Nativo (React Native)
+Olá! 👋 Sou Jefferson, e este é o showcase do aplicativo Reembolso KM, uma solução completa que desenvolvi para a gestão de reembolsos de quilometragem. O projeto demonstra minhas habilidades na criação de aplicativos móveis multiplataforma, desde a arquitetura inicial até uma experiência de usuário polida e moderna.
 
-## Get started
+Sobre o Projeto
+O aplicativo Reembolso KM nasceu da necessidade de modernizar e mobilizar uma aplicação web já existente. Meu objetivo foi criar uma experiência nativa, rápida e intuitiva para iOS e Android, consumindo uma API REST já existente, demonstrando minha capacidade de integrar soluções front-end com um back-end preexistente.
 
-1. Install dependencies
+O resultado é um aplicativo funcional e visualmente atraente, focado em resolver um problema real de negócios: o controle e a gestão de despesas de viagens corporativas.
 
-   ```bash
-   npm install
-   ```
+✨ Destaques Técnicos e Funcionalidades
+Este projeto não é apenas um CRUD. Eu implementei uma arquitetura robusta e funcionalidades que demonstram um profundo entendimento do ecossistema mobile.
 
-2. Start the app
+Arquitetura e Navegação:
+Estrutura Escalável: Organizei o código-fonte em uma arquitetura de pastas modular (/api, /components, /context, /navigation, /screens), o que torna o projeto fácil de manter e expandir.
 
-   ```bash
-   npx expo start
-   ```
+Navegação Inteligente: Utilizei a biblioteca React Navigation para criar um fluxo de navegação robusto, separando as rotas de autenticação das rotas principais do app. O sistema de login automático, baseado em token, leva o usuário diretamente para o dashboard se sua sessão estiver ativa.
 
-In the output, you'll find options to open the app in a
+Gerenciamento de Estado Global: Implementei o React Context API para gerenciar o estado de autenticação de forma limpa e eficiente, disponibilizando o status do usuário em toda a aplicação sem "prop drilling".
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Experiência do Usuário (UX) e Animações:
+Primeira Impressão Memorável: Desenvolvi uma tela de splash screen com uma animação de entrada da logo, seguida por uma transição suave para a tela de login, onde a caixa de formulário sobe de forma animada.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Animações Fluidas: Utilizei a biblioteca React Native Reanimated para criar animações performáticas e fluidas, demonstrando habilidade com animações declarativas e modernas no ecossistema React Native.
 
-## Get a fresh project
+Design Consistente: Criei um componente de fundo persistente que mantém a identidade visual da marca em todas as telas, proporcionando uma experiência de usuário coesa.
 
-When you're ready, run:
+Funcionalidades Chave:
+Autenticação Segura: Sistema completo de autenticação com login, cadastro, recuperação de senha e a funcionalidade "Lembrar de mim", todos se comunicando de forma segura com a API REST.
 
-```bash
-npm run reset-project
-```
+Integração com API Externa: O aplicativo consome de forma eficiente os endpoints de uma API REST para todas as suas operações (CRUD de veículos, viagens, despesas, etc.), demonstrando minha capacidade de trabalhar com serviços externos.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+(Em Desenvolvimento) Gestão Completa: As próximas telas incluirão funcionalidades como listagem com filtros, paginação, upload de imagens para comprovantes e geração de relatórios.
 
-## Learn more
+🛠️ Tecnologias Utilizadas
+React Native: Estrutura principal para o desenvolvimento nativo.
 
-To learn more about developing your project with Expo, look at the following resources:
+Expo: Framework para simplificar o desenvolvimento, build e deploy.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+React Navigation: Para a gestão de rotas e fluxo de telas.
 
-## Join the community
+React Native Reanimated: Para animações de alta performance.
 
-Join our community of developers creating universal apps.
+JavaScript (ES6+): Linguagem principal do projeto.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Context API: Para gerenciamento de estado.
+
+Git & GitHub: Para versionamento de código.
+
+Obrigado por visitar meu repositório! Este projeto é uma demonstração do meu comprometimento em construir soluções de alta qualidade, com atenção tanto à funcionalidade técnica quanto à experiência do usuário final.
