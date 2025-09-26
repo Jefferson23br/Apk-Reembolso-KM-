@@ -8,6 +8,7 @@ import ViagensScreen from '../screens/Viagens/ViagensScreen';
 import DespesasScreen from '../screens/Despesas/DespesasScreen';
 import VeiculosScreen from '../screens/Veiculos/VeiculosScreen';
 import MaisScreen from '../screens/Mais/MaisScreen';
+import VehicleFormScreen from '../screens/Veiculos/VehicleFormScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -32,7 +33,14 @@ const DespesasStack = () => (
 
 const VeiculosStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Veiculos" component={VeiculosScreen} />
+      <Stack.Screen 
+          name="VeiculosList" 
+          component={VeiculosScreen} 
+      />
+      <Stack.Screen 
+          name="VehicleForm" 
+          component={VehicleFormScreen} 
+      />
   </Stack.Navigator>
 );
 
