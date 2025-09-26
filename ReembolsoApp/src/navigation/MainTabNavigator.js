@@ -9,6 +9,12 @@ import DespesasScreen from '../screens/Despesas/DespesasScreen';
 import VeiculosScreen from '../screens/Veiculos/VeiculosScreen';
 import MaisScreen from '../screens/Mais/MaisScreen';
 import VehicleFormScreen from '../screens/Veiculos/VehicleFormScreen';
+import DespesaFormScreen from '../screens/Despesas/DespesaFormScreen';
+import ViagemFormScreen from '../screens/Viagens/ViagemFormScreen';
+import PagamentoFormScreen from '../screens/Mais/PagamentoFormScreen';
+import RelatoriosScreen from '../screens/Mais/RelatoriosScreen';
+import RelatorioParamsScreen from '../screens/Mais/RelatorioParamsScreen';
+import RelatorioViewScreen from '../screens/Mais/RelatorioViewScreen'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -21,13 +27,15 @@ const HomeStack = () => (
 
 const ViagensStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Viagens" component={ViagensScreen} />
+    <Stack.Screen name="ViagensList" component={ViagensScreen} />
+    <Stack.Screen name="ViagemForm" component={ViagemFormScreen} />
   </Stack.Navigator>
 );
 
 const DespesasStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Despesas" component={DespesasScreen} />
+    <Stack.Screen name="DespesasList" component={DespesasScreen} />
+    <Stack.Screen name="DespesaForm" component={DespesaFormScreen} />
   </Stack.Navigator>
 );
 
@@ -46,7 +54,11 @@ const VeiculosStack = () => (
 
 const MaisStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Mais" component={MaisScreen} />
+    <Stack.Screen name="MaisHome" component={MaisScreen} />
+    <Stack.Screen name="PagamentoForm" component={PagamentoFormScreen} />
+    <Stack.Screen name="Relatorios" component={RelatoriosScreen} />
+    <Stack.Screen name="RelatorioParams" component={RelatorioParamsScreen} />
+    <Stack.Screen name="RelatorioView" component={RelatorioViewScreen} />
   </Stack.Navigator>
 );
 
