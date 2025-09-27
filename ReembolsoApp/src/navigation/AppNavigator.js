@@ -40,7 +40,7 @@ export default function AppNavigator() {
       </View>
     );
   }
-
+ // teste
   return (
     <AuthContext.Provider value={authContext}>
       {userToken == null ? (
