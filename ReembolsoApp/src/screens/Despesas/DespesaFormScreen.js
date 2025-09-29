@@ -24,7 +24,6 @@ const CustomPicker = ({ label, selectedValue, onValueChange, items, iconName }) 
     </View>
 );
 
-// Funções de formatação de data
 const formatDateToBR = (date) => {
     if (!date) return '';
     return new Date(date).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
@@ -77,20 +76,44 @@ export default function DespesaFormScreen({ route, navigation }) {
         }
     }, [despesaToEdit]);
 
+    const chooseImageSource = () => {
+        Alert.alert(
+            "Anexar Comprovante",
+            "Escolha de onde você quer adicionar a imagem:",
+            [
+                { text: "Tirar Foto", onPress: handleCameraLaunch },
+                { text: "Escolher da Galeria", onPress: handleImagePick },
+                { text: "Cancelar", style: "cancel" }
+            ]
+        );
+    };
+
+    const handleCameraLaunch = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permissão necessária', 'Precisamos de permissão para acessar sua câmera.');
+            return;
+        }
+        let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: false, 
+            quality: 0.7,
+        });
+        if (!result.canceled) {
+            uploadImage(result.assets[0]);
+        }
+    };
+
     const handleImagePick = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert('Permissão necessária', 'Precisamos de permissão para acessar sua galeria de fotos.');
             return;
         }
-
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
+            allowsEditing: false, // Sem corte
             quality: 0.7,
         });
-
         if (!result.canceled) {
             uploadImage(result.assets[0]);
         }
@@ -150,7 +173,6 @@ export default function DespesaFormScreen({ route, navigation }) {
             const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(bodyData) });
             const result = await response.json();
             if (!response.ok) throw new Error(result.message);
-            
             Alert.alert('Sucesso!', `Despesa ${despesaToEdit ? 'atualizada' : 'cadastrada'} com sucesso!`);
             navigation.goBack();
         } catch (error) {
@@ -159,7 +181,7 @@ export default function DespesaFormScreen({ route, navigation }) {
             setLoading(false);
         }
     };
-
+    
     const handleDelete = async () => {
         if (!despesaToEdit) return;
     
@@ -250,12 +272,10 @@ export default function DespesaFormScreen({ route, navigation }) {
                         </View>
                     </View>
                 </Modal>
-
                 <ScrollView contentContainerStyle={styles.container}>
                     <Text style={styles.title}>{despesaToEdit ? 'Editar Despesa' : 'Cadastrar Despesa'}</Text>
 
                     <CustomPicker
-                        label="Veículo Associado"
                         iconName="car-sport-outline"
                         selectedValue={veiculoId}
                         onValueChange={(itemValue) => setVeiculoId(itemValue)}
@@ -268,7 +288,6 @@ export default function DespesaFormScreen({ route, navigation }) {
                     </TouchableOpacity>
 
                     <CustomPicker
-                        label="Tipo de Despesa"
                         iconName="pricetag-outline"
                         selectedValue={tipoDespesa}
                         onValueChange={(itemValue) => setTipoDespesa(itemValue)}
@@ -280,10 +299,16 @@ export default function DespesaFormScreen({ route, navigation }) {
                         <TextInput style={styles.input} value={valor} onChangeText={setValor} placeholder="Valor (Ex: 150,00)" placeholderTextColor="#ccc" keyboardType="numeric" />
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={handleImagePick}>
+                    <View style={styles.inputWrapper}>
+                        <Icon name="speedometer-outline" size={22} color="#fff" style={styles.icon} />
+                        <TextInput style={styles.input} value={km} onChangeText={setKm} placeholder="KM do Veículo (Opcional)" placeholderTextColor="#ccc" keyboardType="numeric" />
+                    </View>
+
+                    <TouchableOpacity style={styles.button} onPress={chooseImageSource}>
                         <Icon name="camera-outline" size={20} color="#fff" style={{marginRight: 10}} />
                         <Text style={styles.buttonText}>{linkComprovante ? 'Alterar Comprovante' : 'Anexar Comprovante'}</Text>
                     </TouchableOpacity>
+                    
                     {linkComprovante && (
                         <TouchableOpacity onPress={() => setModalVisible(true)}>
                             <Image source={{ uri: `${API_URL}${linkComprovante.replace('/public', '')}` }} style={styles.comprovantePreview} />
