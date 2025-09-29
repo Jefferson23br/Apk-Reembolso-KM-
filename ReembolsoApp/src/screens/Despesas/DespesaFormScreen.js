@@ -255,7 +255,7 @@ export default function DespesaFormScreen({ route, navigation }) {
                     <View style={styles.inputWrapper}><Icon name="cash-outline" size={22} color="#fff" style={styles.icon} /><TextInput style={styles.input} value={valor} onChangeText={setValor} placeholder="Valor (Ex: 150,00)" placeholderTextColor="#ccc" keyboardType="numeric" /></View>
                     <View style={styles.inputWrapper}><Icon name="speedometer-outline" size={22} color="#fff" style={styles.icon} /><TextInput style={styles.input} value={km} onChangeText={setKm} placeholder="KM do Veículo (Opcional)" placeholderTextColor="#ccc" keyboardType="numeric" /></View>
                     
-                    {/* --- SELETOR DE STATUS ADICIONADO AQUI --- */}
+                    {/* ---  --- */}
                     <CustomPicker
                         iconName="checkmark-circle-outline"
                         selectedValue={statusPagamento}
