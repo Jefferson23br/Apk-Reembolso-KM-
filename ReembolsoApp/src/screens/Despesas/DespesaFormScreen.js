@@ -48,7 +48,7 @@ export default function DespesaFormScreen({ route, navigation }) {
     const [formaPagamento, setFormaPagamento] = useState('Débito');
     const [valor, setValor] = useState('');
     const [km, setKm] = useState('');
-    const [statusPagamento, setStatusPagamento] = useState('Não Pago');
+    const [statusPagamento, setStatusPagamento] = useState('Não Pago'); // Estado já existe
     const [descricao, setDescricao] = useState('');
     const [linkComprovante, setLinkComprovante] = useState(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -111,7 +111,7 @@ export default function DespesaFormScreen({ route, navigation }) {
         }
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false, // Sem corte
+            allowsEditing: false,
             quality: 0.7,
         });
         if (!result.canceled) {
@@ -184,52 +184,35 @@ export default function DespesaFormScreen({ route, navigation }) {
     
     const handleDelete = async () => {
         if (!despesaToEdit) return;
-    
-        Alert.alert(
-            "Confirmar Exclusão",
-            "Tem certeza que deseja excluir esta despesa? Esta ação não pode ser desfeita.",
-            [
-                { text: "Cancelar", style: "cancel" },
-                {
-                    text: "Excluir",
-                    style: "destructive",
-                    onPress: async () => {
-                        setLoading(true);
-                        try {
-                            const token = await getToken();
-                            const response = await fetch(`${API_URL}/api/despesas/${despesaToEdit.id}`, {
-                                method: 'DELETE',
-                                headers: { 'Authorization': `Bearer ${token}` }
-                            });
-                            const result = await response.json();
-                            if (!response.ok) throw new Error(result.message);
-    
-                            Alert.alert('Sucesso!', 'Despesa excluída com sucesso!');
-                            navigation.goBack();
-                        } catch (error) {
-                            Alert.alert('Erro ao Excluir', error.message);
-                        } finally {
-                            setLoading(false);
-                        }
-                    }
+        Alert.alert("Confirmar Exclusão", "Tem certeza que deseja excluir esta despesa?",
+            [{ text: "Cancelar", style: "cancel" }, { text: "Excluir", style: "destructive", onPress: async () => {
+                setLoading(true);
+                try {
+                    const token = await getToken();
+                    const response = await fetch(`${API_URL}/api/despesas/${despesaToEdit.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }});
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message);
+                    Alert.alert('Sucesso!', 'Despesa excluída com sucesso!');
+                    navigation.goBack();
+                } catch (error) {
+                    Alert.alert('Erro ao Excluir', error.message);
+                } finally {
+                    setLoading(false);
                 }
-            ]
+            }}]
         );
     };
     
     const handleDownload = async () => {
         if (!linkComprovante) return;
-    
         const { status } = await MediaLibrary.requestPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert('Permissão necessária', 'Precisamos de permissão para salvar arquivos na sua galeria.');
             return;
         }
-    
         setLoading(true);
         const fileUri = FileSystem.documentDirectory + linkComprovante.split('/').pop();
         const fullUrl = `${API_URL}${linkComprovante.replace('/public', '')}`;
-    
         try {
             const { uri } = await FileSystem.downloadAsync(fullUrl, fileUri);
             await MediaLibrary.saveToLibraryAsync(uri);
@@ -246,19 +229,10 @@ export default function DespesaFormScreen({ route, navigation }) {
     return (
         <StaticBackground>
             <SafeAreaView style={styles.safeArea}>
-                <Modal
-                    animationType="fade"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => setModalVisible(false)}
-                >
+                <Modal animationType="fade" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContent}>
-                            <Image
-                                source={{ uri: `${API_URL}${linkComprovante?.replace('/public', '')}` }}
-                                style={styles.modalImage}
-                                resizeMode="contain"
-                            />
+                            <Image source={{ uri: `${API_URL}${linkComprovante?.replace('/public', '')}` }} style={styles.modalImage} resizeMode="contain"/>
                             <View style={styles.modalButtonRow}>
                                 <TouchableOpacity style={[styles.button, styles.modalButton]} onPress={handleDownload} disabled={loading}>
                                     <Icon name="download-outline" size={20} color="#fff" style={{ marginRight: 10 }} />
@@ -275,61 +249,26 @@ export default function DespesaFormScreen({ route, navigation }) {
                 <ScrollView contentContainerStyle={styles.container}>
                     <Text style={styles.title}>{despesaToEdit ? 'Editar Despesa' : 'Cadastrar Despesa'}</Text>
 
+                    <CustomPicker iconName="car-sport-outline" selectedValue={veiculoId} onValueChange={(itemValue) => setVeiculoId(itemValue)} items={[{ label: 'Selecione um Veículo...', value: '' }, ...veiculos.map(v => ({ label: `${v.placa} (${v.descricao})`, value: v.id }))]}/>
+                    <TouchableOpacity style={styles.inputWrapper} onPress={() => setShowDatePicker(true)}><Icon name="calendar-outline" size={22} color="#fff" style={styles.icon} /><Text style={styles.dateText}>{dataDespesa.toLocaleDateString('pt-BR')}</Text></TouchableOpacity>
+                    <CustomPicker iconName="pricetag-outline" selectedValue={tipoDespesa} onValueChange={(itemValue) => setTipoDespesa(itemValue)} items={[{ label: 'Combustível', value: 'Combustível' }, { label: 'Manutenção Veicular', value: 'Manutenção Veicular' }, { label: 'Implemento', value: 'Implemento' }]}/>
+                    <View style={styles.inputWrapper}><Icon name="cash-outline" size={22} color="#fff" style={styles.icon} /><TextInput style={styles.input} value={valor} onChangeText={setValor} placeholder="Valor (Ex: 150,00)" placeholderTextColor="#ccc" keyboardType="numeric" /></View>
+                    <View style={styles.inputWrapper}><Icon name="speedometer-outline" size={22} color="#fff" style={styles.icon} /><TextInput style={styles.input} value={km} onChangeText={setKm} placeholder="KM do Veículo (Opcional)" placeholderTextColor="#ccc" keyboardType="numeric" /></View>
+                    
+                    {/* --- SELETOR DE STATUS ADICIONADO AQUI --- */}
                     <CustomPicker
-                        iconName="car-sport-outline"
-                        selectedValue={veiculoId}
-                        onValueChange={(itemValue) => setVeiculoId(itemValue)}
-                        items={[{ label: 'Selecione um Veículo...', value: '' }, ...veiculos.map(v => ({ label: `${v.placa} (${v.descricao})`, value: v.id }))]}
+                        iconName="checkmark-circle-outline"
+                        selectedValue={statusPagamento}
+                        onValueChange={(itemValue) => setStatusPagamento(itemValue)}
+                        items={[{ label: 'Não Pago', value: 'Não Pago' }, { label: 'Pago', value: 'Pago' }]}
                     />
 
-                    <TouchableOpacity style={styles.inputWrapper} onPress={() => setShowDatePicker(true)}>
-                        <Icon name="calendar-outline" size={22} color="#fff" style={styles.icon} />
-                        <Text style={styles.dateText}>{dataDespesa.toLocaleDateString('pt-BR')}</Text>
-                    </TouchableOpacity>
-
-                    <CustomPicker
-                        iconName="pricetag-outline"
-                        selectedValue={tipoDespesa}
-                        onValueChange={(itemValue) => setTipoDespesa(itemValue)}
-                        items={[{ label: 'Combustível', value: 'Combustível' }, { label: 'Manutenção Veicular', value: 'Manutenção Veicular' }, { label: 'Implemento', value: 'Implemento' }]}
-                    />
-                    
-                    <View style={styles.inputWrapper}>
-                        <Icon name="cash-outline" size={22} color="#fff" style={styles.icon} />
-                        <TextInput style={styles.input} value={valor} onChangeText={setValor} placeholder="Valor (Ex: 150,00)" placeholderTextColor="#ccc" keyboardType="numeric" />
-                    </View>
-
-                    <View style={styles.inputWrapper}>
-                        <Icon name="speedometer-outline" size={22} color="#fff" style={styles.icon} />
-                        <TextInput style={styles.input} value={km} onChangeText={setKm} placeholder="KM do Veículo (Opcional)" placeholderTextColor="#ccc" keyboardType="numeric" />
-                    </View>
-
-                    <TouchableOpacity style={styles.button} onPress={chooseImageSource}>
-                        <Icon name="camera-outline" size={20} color="#fff" style={{marginRight: 10}} />
-                        <Text style={styles.buttonText}>{linkComprovante ? 'Alterar Comprovante' : 'Anexar Comprovante'}</Text>
-                    </TouchableOpacity>
-                    
-                    {linkComprovante && (
-                        <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <Image source={{ uri: `${API_URL}${linkComprovante.replace('/public', '')}` }} style={styles.comprovantePreview} />
-                        </TouchableOpacity>
-                    )}
-
-                    {despesaToEdit && (
-                         <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete} disabled={loading}>
-                            <Icon name="trash-outline" size={20} color="#fff" style={{marginRight: 10}} />
-                            <Text style={styles.buttonText}>Excluir Despesa</Text>
-                        </TouchableOpacity>
-                    )}
-
-                    <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSubmit} disabled={loading}>
-                        <Text style={styles.buttonText}>{loading ? 'Salvando...' : 'Salvar Despesa'}</Text>
-                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={chooseImageSource}><Icon name="camera-outline" size={20} color="#fff" style={{marginRight: 10}} /><Text style={styles.buttonText}>{linkComprovante ? 'Alterar Comprovante' : 'Anexar Comprovante'}</Text></TouchableOpacity>
+                    {linkComprovante && (<TouchableOpacity onPress={() => setModalVisible(true)}><Image source={{ uri: `${API_URL}${linkComprovante.replace('/public', '')}` }} style={styles.comprovantePreview} /></TouchableOpacity>)}
+                    {despesaToEdit && (<TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete} disabled={loading}><Icon name="trash-outline" size={20} color="#fff" style={{marginRight: 10}} /><Text style={styles.buttonText}>Excluir Despesa</Text></TouchableOpacity>)}
+                    <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleSubmit} disabled={loading}><Text style={styles.buttonText}>{loading ? 'Salvando...' : 'Salvar Despesa'}</Text></TouchableOpacity>
                 </ScrollView>
-
-                {showDatePicker && (
-                    <DateTimePicker value={dataDespesa} mode="date" display="default" onChange={(event, date) => { setShowDatePicker(false); if(date) setDataDespesa(date); }} />
-                )}
+                {showDatePicker && (<DateTimePicker value={dataDespesa} mode="date" display="default" onChange={(event, date) => { setShowDatePicker(false); if(date) setDataDespesa(date); }} />)}
             </SafeAreaView>
         </StaticBackground>
     );
@@ -349,33 +288,10 @@ const styles = StyleSheet.create({
     deleteButton: { backgroundColor: '#dc3545' },
     buttonText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold', },
     comprovantePreview: { width: 100, height: 100, borderRadius: 10, alignSelf: 'center', marginVertical: 15, borderWidth: 2, borderColor: 'rgba(255, 255, 255, 0.5)' },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    modalContent: {
-        width: '95%',
-        height: '80%',
-        alignItems: 'center',
-    },
-    modalImage: {
-        width: '100%',
-        height: '85%',
-        borderRadius: 10,
-    },
-    modalButtonRow: {
-        flexDirection: 'row',
-        marginTop: 20,
-        width: '100%',
-        justifyContent: 'space-around',
-    },
-    modalButton: {
-        flex: 0.45,
-        backgroundColor: '#007bff',
-    },
-    backButton: {
-        backgroundColor: '#6c757d',
-    },
+    modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.85)', justifyContent: 'center', alignItems: 'center' },
+    modalContent: { width: '95%', height: '80%', alignItems: 'center' },
+    modalImage: { width: '100%', height: '85%', borderRadius: 10 },
+    modalButtonRow: { flexDirection: 'row', marginTop: 20, width: '100%', justifyContent: 'space-around' },
+    modalButton: { flex: 0.45, backgroundColor: '#007bff' },
+    backButton: { backgroundColor: '#6c757d' },
 });
