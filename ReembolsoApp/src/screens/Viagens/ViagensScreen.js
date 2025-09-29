@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Text, StyleSheet, SafeAreaView, FlatList, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, SafeAreaView, FlatList, View, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import StaticBackground from '../../components/StaticBackground';
 import { getToken } from '../../storage/authStorage';
@@ -51,6 +51,33 @@ export default function ViagensScreen() {
 
     useFocusEffect(useCallback(() => { fetchData(); }, []));
 
+    const handleDeleteRascunho = (id) => {
+        Alert.alert(
+            "Excluir Rascunho",
+            "Tem certeza que deseja excluir este rascunho?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                {
+                    text: "Excluir",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            const token = await getToken();
+                            const response = await fetch(`${API_URL}/api/viagens/${id}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            if (!response.ok) throw new Error('Não foi possível excluir o rascunho.');
+                            setRascunhos(prevRascunhos => prevRascunhos.filter(r => r.id !== id));
+                        } catch (error) {
+                            Alert.alert("Erro", error.message);
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
     const getStatusStyle = (status) => {
         switch (status) {
             case 'Pago': return styles.statusPago;
@@ -86,29 +113,26 @@ export default function ViagensScreen() {
                 <Text style={styles.rascunhoEmptyText}>Nenhum rascunho encontrado.</Text>
             ) : (
                 rascunhos.map(rascunho => (
-                    <TouchableOpacity 
-                        key={rascunho.id} 
-                        style={styles.rascunhoItem}
-                        onPress={() => navigation.navigate('ViagemForm', { viagem: rascunho })}
-                    >
-                        <View>
+                    <View key={rascunho.id} style={styles.rascunhoItem}>
+                        <TouchableOpacity style={{flex: 1}} onPress={() => navigation.navigate('ViagemForm', { viagem: rascunho })}>
                             <Text style={styles.rascunhoItemText}>{formatDate(rascunho.data_viagem)} - {rascunho.placa}</Text>
                             <Text style={styles.rascunhoItemDesc}>{rascunho.descricao || 'Sem descrição'}</Text>
-                        </View>
-                        <Text style={styles.rascunhoFinalizarText}>Finalizar</Text>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleDeleteRascunho(rascunho.id)} style={styles.deleteButton}>
+                            <Icon name="trash-outline" size={22} color="#ff856e" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('ViagemForm', { viagem: rascunho })}>
+                            <Text style={styles.rascunhoFinalizarText}>Finalizar</Text>
+                        </TouchableOpacity>
+                    </View>
                 ))
             )}
         </View>
     );
 
     const renderContent = () => {
-        if (loading) {
-            return <ActivityIndicator size="large" color="#FFFFFF" style={{ marginTop: 50 }} />;
-        }
-        if (error) {
-            return <Text style={styles.errorText}>{error}</Text>;
-        }
+        if (loading) { return <ActivityIndicator size="large" color="#FFFFFF" style={{ marginTop: 50 }} />; }
+        if (error) { return <Text style={styles.errorText}>{error}</Text>; }
         return (
             <FlatList
                 data={viagens}
@@ -116,9 +140,7 @@ export default function ViagensScreen() {
                 keyExtractor={item => item.id.toString()}
                 style={styles.list}
                 ListHeaderComponent={renderRascunhoSection}
-                ListEmptyComponent={
-                    rascunhos.length === 0 ? <Text style={styles.emptyText}>Nenhuma viagem registrada.</Text> : null
-                }
+                ListEmptyComponent={rascunhos.length === 0 ? <Text style={styles.emptyText}>Nenhuma viagem registrada.</Text> : null}
             />
         );
     };
@@ -140,15 +162,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: 'transparent', alignItems: 'center', paddingTop: 20 },
     title: { color: '#FFFFFF', fontSize: 28, fontWeight: 'bold', marginBottom: 20, textShadowColor: 'rgba(0, 0, 0, 0.75)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 5 },
     list: { width: '100%' },
-    itemContainer: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        borderRadius: 12,
-        marginBottom: 15,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.2)',
-        overflow: 'hidden',
-        marginHorizontal: 20,
-    },
+    itemContainer: { backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: 12, marginBottom: 15, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)', overflow: 'hidden', marginHorizontal: 20, },
     itemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: 'rgba(255, 255, 255, 0.1)', },
     headerText: { color: '#FFFFFF', fontWeight: 'bold', marginLeft: 8, },
     statusBadge: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: 12, fontSize: 12, fontWeight: 'bold', color: '#fff', },
@@ -163,7 +177,7 @@ const styles = StyleSheet.create({
     reembolsoText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold', },
     errorText: { color: '#ffc107', fontSize: 16, textAlign: 'center', marginTop: 50 },
     emptyText: { color: '#FFFFFF', textAlign: 'center', marginTop: 20, fontSize: 16 },
-    fab: { position: 'absolute', width: 60, height: 60, alignItems: 'center', justifyContent: 'center', right: 30, bottom: 30, backgroundColor: '#007bff', borderRadius: 30, elevation: 8, shadowColor: '#000', shadowRadius: 5, shadowOpacity: 0.3, shadowOffset: { height: 2, width: 0 }, },
+    fab: { position: 'absolute', width: 60, height: 60, alignItems: 'center', justifyContent: 'center', right: 30, bottom: 30, backgroundColor: '#007bff', borderRadius: 30, elevation: 8, },
     rascunhoContainer: { backgroundColor: 'rgba(255, 193, 7, 0.2)', borderRadius: 12, marginHorizontal: 20, marginBottom: 20, padding: 15, borderWidth: 1, borderColor: '#ffc107', },
     rascunhoTitle: { color: '#ffc107', fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
     rascunhoEmptyText: { color: '#fff', fontStyle: 'italic' },
@@ -171,4 +185,5 @@ const styles = StyleSheet.create({
     rascunhoItemText: { color: '#fff', fontWeight: 'bold' },
     rascunhoItemDesc: { color: '#ccc', fontSize: 12 },
     rascunhoFinalizarText: { color: '#ffc107', fontWeight: 'bold' },
+    deleteButton: { padding: 10, marginLeft: 10 }
 });
