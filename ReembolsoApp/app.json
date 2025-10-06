@@ -2,7 +2,7 @@
   "expo": {
     "name": "Reembolso Km",
     "slug": "ReembolsoKm",
-    "version": "2.2.2",.
+    "version": "2.2.2",
     "orientation": "portrait",
     "icon": "./src/assets/images/logo.png",
     "scheme": "reembolsoapp",
